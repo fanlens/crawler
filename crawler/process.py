@@ -2,9 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from scrapy.crawler import CrawlerProcess, configure_logging
+from scrapy.crawler import CrawlerProcess
 from scrapy.utils.log import configure_logging, _get_handler
-from scrapy.utils.project import get_project_settings
+from scrapy.settings import Settings
+from . import settings
 
 from crawler.spiders.facebook_page import FacebookPageSpider
 
@@ -14,12 +15,14 @@ def facebook_page_process(page, since=None, include_extensions=None, progress=No
     returns a new crawler process for the facebook page spider,
     call `start()` on the returned object to start the crawling process
     """
-    configure_logging(get_project_settings(), install_root_handler=False)
+    crawler_settings = Settings()
+    crawler_settings.setmodule(settings)
+    configure_logging(crawler_settings, install_root_handler=False)
     logging.getLogger('scrapy').propagate = False
-    logging.getLogger('scrapy').addHandler(_get_handler(get_project_settings()))
+    logging.getLogger('scrapy').addHandler(_get_handler(crawler_settings))
     logging.getLogger('facebook').propagate = False
-    logging.getLogger('facebook').addHandler(_get_handler(get_project_settings()))
-    process = CrawlerProcess(get_project_settings())
+    logging.getLogger('facebook').addHandler(_get_handler(crawler_settings))
+    process = CrawlerProcess(settings=crawler_settings)
     # todo ugly/stupid
     kwargs = dict(page=page)
     if since is not None:
