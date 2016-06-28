@@ -23,13 +23,13 @@ class StoreFacebookPipeline(object):
         self.db = DB()
 
     def open_spider(self, spider):
-        logging.error('open storefacebook pipeline')
+        logging.info('open storefacebook pipeline')
         self.crawl_ts = datetime.datetime.utcnow()
         self.dangling = 0
         self.session = self.db.session
 
     def close_spider(self, spider):
-        logging.error('closing storefacebook pipeline')
+        logging.info('closing storefacebook pipeline')
         self.session.commit()
         self.session.close()
 
