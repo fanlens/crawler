@@ -5,11 +5,16 @@
 # See documentation in:
 # http://doc.scrapy.org/en/latest/topics/items.html
 
+import typing
 import scrapy
 
 
-class FacebookItem(scrapy.Item):
+class CrawlItem(scrapy.Item):
     id = scrapy.Field()
-    type = scrapy.Field()
+    source_id = scrapy.Field()
     data = scrapy.Field()
-    meta = scrapy.Field()
+    crawl_ts = scrapy.Field()
+
+
+class CrawlBulk(scrapy.Item):
+    bulk = scrapy.Field()  # type: typing.List[CrawlItem]

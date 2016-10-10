@@ -13,7 +13,7 @@ def with_access_token(fun):
         url = fun(*args, **kwargs)
         if '?' not in url:
             url += '?'
-        url += '&access_token=' + _CONFIG['access_token']
+        url += '&access_token=' + str(_CONFIG['access_token'])
         return url
 
     return wrapped

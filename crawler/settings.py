@@ -12,9 +12,18 @@ LOG_LEVEL = 'INFO'
 LOG_STDOUT = False
 
 ITEM_PIPELINES = {
-    'crawler.pipelines.StoreFacebookPipeline': 305,
+    'crawler.pipelines.RESTPipeline': 305,
+    'crawler.pipelines.BulkRESTPipeline': 306,
 }
 CONCURRENT_REQUESTS_PER_DOMAIN = 1
+
+DOWNLOADER_MIDDLEWARES = {
+    'crawler.middleware.twitter.TwitterDownloaderMiddleware': 10,
+}
+TWITTER_CONSUMER_KEY = 'IkgyehX6go8Fia0gXFueg'
+TWITTER_CONSUMER_SECRET = 'vuJkSdc4N9HUjgTZ0UNREQsYac0EZ3GyLFUdI76hkHY'
+TWITTER_ACCESS_TOKEN_KEY = '719140764417204224-XaWYhXVRTNA5jfZDyDOQstT4GffaZpc'
+TWITTER_ACCESS_TOKEN_SECRET = 'YkL8NEYzwyy85gEEncj5442DOMioD4MJJOmgzaM9wmCb6'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 # USER_AGENT = 'crawler (+http://www.yourdomain.com)'

@@ -14,6 +14,8 @@ setup(
     install_requires=[
         'fl-base',
         'scrapy',
+        'requests',
+        'tweepy',
         'python-dateutil',
     ],
 )

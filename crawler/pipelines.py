@@ -1,50 +1,39 @@
 # -*- coding: utf-8 -*-
-import datetime
-import logging
+import requests
+from .spiders import GenericMixin
+from .items import CrawlItem, CrawlBulk
 
-from db import DB, insert_or_ignore
-from db.models.facebook import FacebookPostEntry, FacebookCommentEntry, FacebookReactionEntry
-from .items import FacebookItem
+# BASE_PATH = 'https://localhost/v2/tagger'
+BASE_PATH = 'http://localhost:5000/v3/activities'
 
 
-class StoreFacebookPipeline(object):
-    item_cls = {
-        'post': FacebookPostEntry,
-        'comments': FacebookCommentEntry,
-        'reactions': FacebookReactionEntry,
-    }
-
+class RESTPipeline(object):
     def __init__(self):
-        self.session = None
-        self.max_dangling = 500
-        self.dangling = 0
-        self.crawl_ts = 0
-        self.buffer = []
-        self.db = DB()
+        self._token = None
 
-    def open_spider(self, spider):
-        logging.info('open storefacebook pipeline')
-        self.crawl_ts = datetime.datetime.utcnow()
-        self.dangling = 0
-        self.session = self.db.session
+    def process_item(self, item: CrawlItem, spider: GenericMixin):
+        if not isinstance(item, CrawlItem):
+            return item
 
-    def close_spider(self, spider):
-        logging.info('closing storefacebook pipeline')
-        self.session.commit()
-        self.session.close()
-
-    def process_item(self, item: FacebookItem, spider):
-        item_type = item['type']
-        item_cls = self.item_cls[item_type]
-        entry = item_cls(id=item['id'], data=item['data'], crawl_ts=self.crawl_ts, meta=item['meta'])
-        if 'post_id' in item['meta']:
-            entry.post_id = item['meta']['post_id']
-            del entry.meta['post_id']  # no need to store twice
-        # insert_or_update(self.session, entry, 'id', update_fields={'crawl_ts'})
-        insert_or_ignore(self.session, entry)
-        self.dangling += 1
-        if self.dangling > self.max_dangling:
-            logging.debug("committing to db")
-            self.session.commit()
-            self.dangling = 0
+        headers = {'Authorization-Token': spider.token, 'Content-Type': 'application/json'}
+        requests.put('%s/%d/%s' % (BASE_PATH, item['source_id'], item['id']),
+                     json=item._values,
+                     headers=headers,
+                     verify=False)
         return item
+
+
+class BulkRESTPipeline(object):
+    def __init__(self):
+        self._token = None
+
+    def process_item(self, bulk: CrawlBulk, spider: GenericMixin):
+        if not isinstance(bulk, CrawlBulk):
+            return bulk
+
+        headers = {'Authorization-Token': spider.token, 'Content-Type': 'application/json'}
+        requests.post('%s/' % BASE_PATH,
+                      json=dict(activities=[item._values for item in bulk['bulk']]),
+                      headers=headers,
+                      verify=False)
+        return bulk

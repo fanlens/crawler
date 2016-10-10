@@ -2,9 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import json
+from datetime import datetime, timedelta
 
-from utils import now
-from db.models.facebook import get_since, FacebookPostEntry, FacebookCommentEntry, FacebookReactionEntry
+from db import DB
+from db.models.activities import Source
+from db.models.users import User
 
 
 def parse_json(fun):
@@ -24,42 +26,45 @@ class ProgressMixin(object):
             self._progress(**kwargs)
 
 
-class FacebookMixin(object):
-    allowed_domains = ["facebook.com"]
-    root_models = {
-        'post': FacebookPostEntry,
-        'comments': FacebookCommentEntry,
-        'reactions': FacebookReactionEntry
-    }
-    limits = {
-        'post': 50,
-        'comments': 700,
-        'reactions': 4000
-    }
-
-    def __init__(self, page, since, root_model):
-        assert len(page) > 0
+class GenericMixin(object):
+    def __init__(self, source_id, user_id, since, token):
+        assert source_id is not None
+        assert token is not None
+        self._token = token
+        with DB().ctx() as session:
+            self._user = session.query(User).get(user_id)
+            assert {'admin', 'crawling'}.intersection(
+                role.name for role in self._user.roles), "user doesn't have required role"
+            self._source = session.query(Source).get(source_id)
+            assert self._source in self._user.sources, "user doesn't have access to source"
+            assert self._source.type.name == self.name, self._source.type
         if since is None:
             since = -14  # default -14 days
-        if since == 'cont':
-            self.logger.info('fetching last post timestamp')
-            # todo irrelevant for extensions crawler?
-            self._since = get_since(root_model, page)
-        else:
-            try:
-                since_int = int(since)
-                if since_int < 0:
-                    self._since = now(millis=False) + since_int * 86400
-                else:
-                    self._since = since
-            except ValueError:
-                self._since = since
-        self._page = page
+        try:
+            since_int = int(since)
+            if since_int < 0:
+                self._since = datetime.utcnow() - timedelta(days=-since_int)
+            else:
+                self._since = datetime.utcfromtimestamp(since_int)
+        except ValueError:
+            self._since = datetime.utcnow()
 
     @property
-    def page(self):
-        return self._page
+    def source(self):
+        return self._source
 
     @property
     def since(self):
+        return int(self._since.timestamp())
+
+    @property
+    def since_dt(self):
         return self._since
+
+    @property
+    def token(self):
+        return self._token
+
+    @property
+    def user(self):
+        return self._user
