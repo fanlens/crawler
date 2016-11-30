@@ -3,8 +3,7 @@ import requests
 from .spiders import GenericMixin
 from .items import CrawlItem, CrawlBulk
 
-# BASE_PATH = 'https://localhost/v2/tagger'
-BASE_PATH = 'http://localhost:5000/v3/activities'
+BASE_PATH = 'https://localhost/v3/activities'
 
 
 class RESTPipeline(object):

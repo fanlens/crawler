@@ -5,7 +5,7 @@ import scrapy
 
 from crawler.spiders import GenericMixin, ProgressMixin
 from crawler.api.facebook import extension_url, page_url
-from crawler.items import CrawlItem
+from crawler.items import CrawlItem, CrawlBulk
 from crawler.spiders import parse_json
 
 from datetime import datetime, tzinfo, timedelta
@@ -31,7 +31,7 @@ class FacebookPageSpider(scrapy.Spider, GenericMixin, ProgressMixin):
         'reactions': 4000
     }
 
-    def __init__(self, user_id, source_id, since=None, include_extensions='comments,reactions', token=None, progress=None):
+    def __init__(self, user_id, source_id, since=None, include_extensions='comments', token=None, progress=None):
         GenericMixin.__init__(self, user_id=user_id, source_id=source_id, since=since, token=token)
         ProgressMixin.__init__(self, progress=progress)
         self.start_urls = [page_url(self.source.slug, limit=self.limits['post'], since=self.since)]
@@ -57,8 +57,8 @@ class FacebookPageSpider(scrapy.Spider, GenericMixin, ProgressMixin):
 
     @parse_json
     def parse_extension(self, response, json_body=None):
-        for extension in json_body['data']:
-            yield self._create_item(extension)
+        crawl_bulk = CrawlBulk(bulk=[self._create_item(extension) for extension in json_body['data']])
+        yield crawl_bulk
         if 'next' in json_body.get('paging', ()):
             paging_request = scrapy.Request(json_body['paging']['next'], callback=self.parse_extension)
             paging_request.meta.update(response.meta)
