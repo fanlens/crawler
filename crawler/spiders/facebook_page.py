@@ -32,6 +32,7 @@ class FacebookPageSpider(scrapy.Spider, GenericMixin, ProgressMixin):
     }
 
     def __init__(self, source_id, since=None, include_extensions='comments', token=None, progress=None):
+
         GenericMixin.__init__(self, source_id=source_id, since=since, token=token)
         ProgressMixin.__init__(self, progress=progress)
         self.start_urls = [page_url(self.source['slug'], limit=self.limits['post'], since=self.since)]
