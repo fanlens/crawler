@@ -2,11 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import json
+import requests
 from datetime import datetime, timedelta
-
-from db import DB
-from db.models.activities import Source
-from db.models.users import User
+from crawler import BASE_PATH
 
 
 def parse_json(fun):
@@ -27,17 +25,12 @@ class ProgressMixin(object):
 
 
 class GenericMixin(object):
-    def __init__(self, source_id, user_id, since, token):
+    def __init__(self, source_id, since, token):
         assert source_id is not None
         assert token is not None
         self._token = token
-        with DB().ctx() as session:
-            self._user = session.query(User).get(user_id)
-            assert {'admin', 'crawling'}.intersection(
-                role.name for role in self._user.roles), "user doesn't have required role"
-            self._source = session.query(Source).get(source_id)
-            assert self._source in self._user.sources, "user doesn't have access to source"
-            assert self._source.type.name == self.name, self._source.type
+        headers = {'Authorization-Token': self.token, 'Content-Type': 'application/json'}
+        self._source = requests.get('%s/sources/%s' % (BASE_PATH, source_id), headers=headers).json()
         if since is None:
             since = -14  # default -14 days
         try:

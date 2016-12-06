@@ -31,15 +31,15 @@ class FacebookPageSpider(scrapy.Spider, GenericMixin, ProgressMixin):
         'reactions': 4000
     }
 
-    def __init__(self, user_id, source_id, since=None, include_extensions='comments', token=None, progress=None):
-        GenericMixin.__init__(self, user_id=user_id, source_id=source_id, since=since, token=token)
+    def __init__(self, source_id, since=None, include_extensions='comments', token=None, progress=None):
+        GenericMixin.__init__(self, source_id=source_id, since=since, token=token)
         ProgressMixin.__init__(self, progress=progress)
-        self.start_urls = [page_url(self.source.slug, limit=self.limits['post'], since=self.since)]
-        self.logger.info('crawling page %s since %s' % (self.source.slug, self.since))
+        self.start_urls = [page_url(self.source['slug'], limit=self.limits['post'], since=self.since)]
+        self.logger.info('crawling page %s since %s' % (self.source['slug'], self.since))
         self._included_extensions = set(include_extensions.lower().split(',')).intersection(self.allowed_extensions)
 
     def _create_item(self, data):
-        return CrawlItem(id=data['id'], source_id=self.source.id, data=data,
+        return CrawlItem(id=data['id'], source_id=self.source['id'], data=data,
                          crawl_ts=datetime.utcnow().replace(tzinfo=simple_utc()).isoformat())
 
     @parse_json

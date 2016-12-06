@@ -27,16 +27,16 @@ class TwitterSearchSpider(scrapy.Spider, GenericMixin, ProgressMixin):
         'search': 50,
     }
 
-    def __init__(self, user_id, source_id, since=None, token=None, progress=None):
-        GenericMixin.__init__(self, user_id=user_id, source_id=source_id, since=since, token=token)
+    def __init__(self, source_id, since=None, token=None, progress=None):
+        GenericMixin.__init__(self, source_id=source_id, since=since, token=token)
         ProgressMixin.__init__(self, progress=progress)
-        self.logger.info('crawling page %s since %s' % (self.source.slug, self.since))
+        self.logger.info('crawling page %s since %s' % (self.source['slug'], self.since))
 
     def start_requests(self):
-        return [TwitterSearchRequest(q=self.source.slug)]
+        return [TwitterSearchRequest(q=self.source['slug'])]
 
     def _create_item(self, data: dict) -> CrawlItem:
-        return CrawlItem(id=data['id_str'], source_id=self.source.id, data=data,
+        return CrawlItem(id=data['id_str'], source_id=self.source['id'], data=data,
                          crawl_ts=datetime.utcnow().replace(tzinfo=simple_utc()).isoformat())
 
     def parse(self, response: TwitterResponse):
@@ -56,4 +56,4 @@ class TwitterSearchSpider(scrapy.Spider, GenericMixin, ProgressMixin):
         yield crawl_bulk
 
         max_id = response.tweets[-1]['id_str']
-        yield TwitterSearchRequest(q=self.source.slug, max_id=max_id)
+        yield TwitterSearchRequest(q=self.source['slug'], max_id=max_id)
