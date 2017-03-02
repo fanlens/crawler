@@ -25,11 +25,11 @@ class ProgressMixin(object):
 
 
 class GenericMixin(object):
-    def __init__(self, source_id, since, token):
+    def __init__(self, source_id, since, api_key):
         assert source_id is not None
-        assert token is not None
-        self._token = token
-        headers = {'Authorization-Token': self.token, 'Content-Type': 'application/json'}
+        assert api_key is not None
+        self._api_key = api_key
+        headers = {'Authorization-Token': self.api_key, 'Content-Type': 'application/json'}
         self._source = requests.get('%s/sources/%s' % (BASE_PATH, source_id), headers=headers).json()
         if since is None:
             since = -14  # default -14 days
@@ -55,8 +55,8 @@ class GenericMixin(object):
         return self._since
 
     @property
-    def token(self):
-        return self._token
+    def api_key(self):
+        return self._api_key
 
     @property
     def user(self):

@@ -31,9 +31,9 @@ class FacebookPageSpider(scrapy.Spider, GenericMixin, ProgressMixin):
         'reactions': 4000
     }
 
-    def __init__(self, source_id, since=None, include_extensions='comments', token=None, progress=None):
+    def __init__(self, source_id, since=None, include_extensions='comments', api_key=None, progress=None):
 
-        GenericMixin.__init__(self, source_id=source_id, since=since, token=token)
+        GenericMixin.__init__(self, source_id=source_id, since=since, api_key=api_key)
         ProgressMixin.__init__(self, progress=progress)
         self.start_urls = [page_url(self.source['slug'], limit=self.limits['post'], since=self.since)]
         self.logger.info('crawling page %s since %s' % (self.source['slug'], self.since))

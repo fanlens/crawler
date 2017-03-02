@@ -27,8 +27,8 @@ class TwitterSearchSpider(scrapy.Spider, GenericMixin, ProgressMixin):
         'search': 50,
     }
 
-    def __init__(self, source_id, since=None, token=None, progress=None):
-        GenericMixin.__init__(self, source_id=source_id, since=since, token=token)
+    def __init__(self, source_id, since=None, api_key=None, progress=None):
+        GenericMixin.__init__(self, source_id=source_id, since=since, api_key=api_key)
         ProgressMixin.__init__(self, progress=progress)
         self.logger.info('crawling page %s since %s' % (self.source['slug'], self.since))
 

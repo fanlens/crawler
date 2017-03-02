@@ -14,7 +14,7 @@ class RESTPipeline(object):
         if not isinstance(item, CrawlItem):
             return item
 
-        headers = {'Authorization-Token': spider.token, 'Content-Type': 'application/json'}
+        headers = {'Authorization-Token': spider.api_key, 'Content-Type': 'application/json'}
         requests.put('%s/%d/%s' % (BASE_PATH, item['source_id'], item['id']),
                      json=item._values,
                      headers=headers)
@@ -29,7 +29,7 @@ class BulkRESTPipeline(object):
         if not isinstance(bulk, CrawlBulk):
             return bulk
 
-        headers = {'Authorization-Token': spider.token, 'Content-Type': 'application/json'}
+        headers = {'Authorization-Token': spider.api_key, 'Content-Type': 'application/json'}
         requests.post('%s/' % BASE_PATH,
                       json=dict(activities=[item._values for item in bulk['bulk']]),
                       headers=headers)
