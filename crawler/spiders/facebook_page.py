@@ -48,7 +48,9 @@ class FacebookPageSpider(scrapy.Spider, GenericMixin, ProgressMixin):
         self.logger.info(response.url)
         for post in json_body['data']:
             self.send_progress(post_id=post['id'], post_date=post['created_time'], since=self.since)
-            yield self._create_item(post)
+            if post.get('message') and post.get('from'):
+                yield self._create_item(post)
+                continue
             for extension in self.included_extensions:
                 request = scrapy.Request(extension_url(post['id'], extension, limit=self.limits[extension]),
                                          callback=self.parse_extension)
@@ -58,8 +60,11 @@ class FacebookPageSpider(scrapy.Spider, GenericMixin, ProgressMixin):
 
     @parse_json
     def parse_extension(self, response, json_body=None):
-        crawl_bulk = CrawlBulk(bulk=[self._create_item(extension) for extension in json_body['data']])
-        yield crawl_bulk
+        bulk_size = 5
+        for i in range(0, len(json_body['data']), bulk_size):
+            crawl_bulk = CrawlBulk(bulk=[self._create_item(extension) for extension in json_body['data'][i:bulk_size]
+                                         if extension.get('message') and extension.get('from')])
+            yield crawl_bulk
         if 'next' in json_body.get('paging', ()):
             paging_request = scrapy.Request(json_body['paging']['next'], callback=self.parse_extension)
             paging_request.meta.update(response.meta)

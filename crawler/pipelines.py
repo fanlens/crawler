@@ -28,6 +28,8 @@ class BulkRESTPipeline(object):
     def process_item(self, bulk: CrawlBulk, spider: GenericMixin):
         if not isinstance(bulk, CrawlBulk):
             return bulk
+        if len(bulk['bulk']) == 0:
+            return bulk
 
         headers = {'Authorization-Token': spider.api_key, 'Content-Type': 'application/json'}
         requests.post('%s/' % BASE_PATH,
