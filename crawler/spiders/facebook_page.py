@@ -36,7 +36,7 @@ class FacebookPageSpider(scrapy.Spider, GenericMixin, ProgressMixin):
         GenericMixin.__init__(self, source_id=source_id, since=since, api_key=api_key)
         ProgressMixin.__init__(self, progress=progress)
         self.start_urls = [page_url(self.source['slug'], limit=self.limits['post'], since=self.since)]
-        self.logger.info('crawling page %s since %s' % (self.source['slug'], self.since))
+        self.logger.info('Crawling page %s since %s' % (self.source['slug'], self.since))
         self._included_extensions = set(include_extensions.lower().split(',')).intersection(self.allowed_extensions)
 
     def _create_item(self, data):

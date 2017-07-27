@@ -5,6 +5,8 @@ import json
 import requests
 from datetime import datetime, timedelta
 from crawler import BASE_PATH
+from db import DB
+from db.models.activities import Source
 
 
 def parse_json(fun):
@@ -27,10 +29,18 @@ class ProgressMixin(object):
 class GenericMixin(object):
     def __init__(self, source_id, since, api_key):
         assert source_id is not None
-        assert api_key is not None
         self._api_key = api_key
-        headers = {'Authorization-Token': self.api_key, 'Content-Type': 'application/json'}
-        self._source = requests.get('%s/sources/%s' % (BASE_PATH, source_id), headers=headers).json()
+        if self._api_key is None:
+            with DB().ctx() as session:
+                source = session.query(Source).get(source_id)
+                self._source = dict(id=source.id,
+                                    type=source.type.value,
+                                    uri=source.uri,
+                                    slug=source.slug)
+        else:
+            headers = {'Authorization-Token': self.api_key, 'Content-Type': 'application/json'}
+            self._source = requests.get('%s/sources/%s' % (BASE_PATH, source_id), headers=headers).json()
+        assert self._source
         if since is None:
             since = -14  # default -14 days
         try:
