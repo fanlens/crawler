@@ -5,9 +5,9 @@ import logging
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.log import configure_logging, _get_handler
 from scrapy.settings import Settings
-from . import settings
+from crawler import settings
 
-from .spiders.facebook_page import FacebookPageSpider
+from crawler.spiders.facebook_page import FacebookPageSpider
 
 
 def crawler_process(spider_class: object, **kwargs) -> CrawlerProcess:
