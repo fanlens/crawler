@@ -5,9 +5,9 @@ import logging
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.log import configure_logging, _get_handler
 from scrapy.settings import Settings
-from crawler import settings
+import crawler.settings
 
-from crawler.spiders.facebook_page import FacebookPageSpider
+from .spiders.facebook_page import FacebookPageSpider
 
 
 def crawler_process(spider_class: object, **kwargs) -> CrawlerProcess:
@@ -16,7 +16,7 @@ def crawler_process(spider_class: object, **kwargs) -> CrawlerProcess:
     call `start()` on the returned object to start the crawling process
     """
     crawler_settings = Settings()
-    crawler_settings.setmodule(settings)  # get_project_settings doesn't work in this context!
+    crawler_settings.setmodule(crawler.settings)  # get_project_settings doesn't work in this context!
     configure_logging(crawler_settings, install_root_handler=False)
     logging.getLogger('scrapy').propagate = False
     logging.getLogger('scrapy').addHandler(_get_handler(crawler_settings))
