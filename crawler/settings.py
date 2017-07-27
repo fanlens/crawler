@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from config.db import Config
+
 
 # Scrapy settings for crawler project
 BOT_NAME = 'crawler'
@@ -14,6 +16,8 @@ LOG_STDOUT = False
 ITEM_PIPELINES = {
     'crawler.pipelines.RESTPipeline': 305,
     'crawler.pipelines.BulkRESTPipeline': 306,
+    'crawler.pipelines.DBPipeline': 405,
+    'crawler.pipelines.BulkDBPipeline': 406,
 }
 CONCURRENT_REQUESTS_PER_DOMAIN = 1
 
@@ -24,7 +28,9 @@ TWITTER_CONSUMER_KEY = ''
 TWITTER_CONSUMER_SECRET = ''
 TWITTER_ACCESS_TOKEN_KEY = ''
 TWITTER_ACCESS_TOKEN_SECRET = ''
-FACEBOOK_ACCESS_TOKEN = ''
+
+facebook_conf = Config('facebook')
+FACEBOOK_ACCESS_TOKEN = facebook_conf['access_token']
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 # USER_AGENT = 'crawler (+http://www.yourdomain.com)'
