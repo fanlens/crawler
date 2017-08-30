@@ -2,7 +2,7 @@
 import requests
 from crawler import BASE_PATH
 from db.models.activities import Data
-from db import DB, insert_or_ignore
+from db import get_session, insert_or_ignore
 
 from .items import CrawlItem, CrawlBulk
 from .spiders import GenericMixin
@@ -46,7 +46,7 @@ class DBPipeline(object):
     def process_item(self, item: CrawlItem, spider: GenericMixin):
         if not isinstance(item, CrawlItem) or spider.api_key is not None:
             return item
-        with DB().ctx() as session:
+        with get_session() as session:
             self.insert_item_db(session, item)
             session.commit()
 
@@ -55,7 +55,7 @@ class BulkDBPipeline(object):
     def process_item(self, bulk: CrawlBulk, spider: GenericMixin):
         if not isinstance(bulk, CrawlBulk) or spider.api_key is not None:
             return bulk
-        with DB().ctx() as session:
+        with get_session() as session:
             for item in bulk['bulk']:
                 DBPipeline.insert_item_db(session, item)
             session.commit()
