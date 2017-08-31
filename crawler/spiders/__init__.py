@@ -34,7 +34,7 @@ class GenericMixin(object):
             with get_session() as session:
                 source = session.query(Source).get(source_id)
                 self._source = dict(id=source.id,
-                                    type=source.type.value,
+                                    type=source.type,
                                     uri=source.uri,
                                     slug=source.slug)
         else:
