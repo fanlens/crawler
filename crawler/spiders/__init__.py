@@ -5,7 +5,7 @@ import json
 import requests
 from datetime import datetime, timedelta
 from crawler import BASE_PATH
-from db import DB
+from db import get_session
 from db.models.activities import Source
 
 
@@ -31,10 +31,10 @@ class GenericMixin(object):
         assert source_id is not None
         self._api_key = api_key
         if self._api_key is None:
-            with DB().ctx() as session:
+            with get_session() as session:
                 source = session.query(Source).get(source_id)
                 self._source = dict(id=source.id,
-                                    type=source.type.value,
+                                    type=source.type,
                                     uri=source.uri,
                                     slug=source.slug)
         else:
