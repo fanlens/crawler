@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import requests
-from crawler import BASE_PATH
+from crawler import api_path, headers
 from db.models.activities import Data
 from db import get_session, insert_or_ignore
 
@@ -13,10 +13,9 @@ class RESTPipeline(object):
         if not isinstance(item, CrawlItem) or spider.api_key is None:
             return item
 
-        headers = {'Authorization-Token': spider.api_key, 'Content-Type': 'application/json'}
-        requests.put('%s/%d/%s' % (BASE_PATH, item['source_id'], item['id']),
+        requests.put(api_path(item['source_id'], item['id']),
                      json=item._values,
-                     headers=headers)
+                     headers=headers(spider.api_key))
         return item
 
 
@@ -27,10 +26,9 @@ class BulkRESTPipeline(object):
         if len(bulk['bulk']) == 0:
             return bulk
 
-        headers = {'Authorization-Token': spider.api_key, 'Content-Type': 'application/json'}
-        requests.post('%s/' % BASE_PATH,
+        requests.post(api_path(),
                       json=dict(activities=[item._values for item in bulk['bulk']]),
-                      headers=headers)
+                      headers=headers(spider.api_key))
         return bulk
 
 

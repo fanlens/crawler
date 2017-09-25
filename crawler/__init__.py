@@ -1,14 +1,23 @@
 # coding=utf-8
-import requests
-import distutils.util
 from functools import partialmethod
 
-from config.env import Environment
+import requests
 
-crawler_env = Environment('CRAWLER')
-BASE_PATH = '%s/v4/activities' % crawler_env['HOST']
+from config import get_config
 
-if not distutils.util.strtobool(Environment('CRAWLER')['VERIFYSSL']):
+_config = get_config()
+BASE_PATH = '%s/%s/activities' % (_config.get('DEFAULT', 'version'), _config.get('CRAWLER', 'api_host'))
+
+
+def api_path(*parts):
+    return BASE_PATH + '/' + '/'.join(map(str, parts))
+
+
+def headers(api_key):
+    return {'Authorization': api_key, 'Content-Type': 'application/json'}
+
+
+if not _config.getboolean('CRAWLER', 'verifyssl', fallback=False):
     old_request = requests.Session.request
     requests.Session.request = partialmethod(old_request, verify=False)
     requests.packages.urllib3.disable_warnings()
