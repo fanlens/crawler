@@ -20,8 +20,6 @@ def crawler_process(spider_class: object, **kwargs) -> CrawlerProcess:
     configure_logging(crawler_settings, install_root_handler=False)
     logging.getLogger('scrapy').propagate = False
     logging.getLogger('scrapy').addHandler(_get_handler(crawler_settings))
-    # logging.getLogger('facebook').propagate = False
-    # logging.getLogger('facebook').addHandler(_get_handler(crawler_settings))
     process = CrawlerProcess(settings=crawler_settings)
     process.crawl(spider_class, **kwargs)
     return process
