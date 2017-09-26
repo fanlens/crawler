@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import tweepy
-import logging
 
 from scrapy.http import Request, Response
 
@@ -51,8 +50,6 @@ class TwitterDownloaderMiddleware(object):
                               wait_on_rate_limit_notify=True,
                               retry_count=5,
                               retry_delay=2)
-
-        logging.info('Using creds [CONSUMER KEY: %s, ACCESS TOKEN KEY: %s]' % (consumer_key, access_token_key))
 
     @classmethod
     def from_crawler(cls, crawler):
