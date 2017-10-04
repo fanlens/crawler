@@ -1,7 +1,9 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from config import get_config
+"""Settings for the scrapy crawler"""
+from common.config import get_config
 
-_config = get_config()
+_CONFIG = get_config()
 
 # Scrapy settings for crawler project
 BOT_NAME = 'crawler'
@@ -25,12 +27,12 @@ CONCURRENT_REQUESTS_PER_DOMAIN = 1
 DOWNLOADER_MIDDLEWARES = {
     'crawler.middleware.twitter.TwitterDownloaderMiddleware': 10,
 }
-TWITTER_CONSUMER_KEY = _config.get("TWITTER", "consumer_key")
-TWITTER_CONSUMER_SECRET = _config.get("TWITTER", "consumer_secret")
-TWITTER_ACCESS_TOKEN_KEY = _config.get("TWITTER", "access_token")
-TWITTER_ACCESS_TOKEN_SECRET = _config.get("TWITTER", "access_token_secret")
+TWITTER_CONSUMER_KEY = _CONFIG.get("TWITTER", "consumer_key")
+TWITTER_CONSUMER_SECRET = _CONFIG.get("TWITTER", "consumer_secret")
+TWITTER_ACCESS_TOKEN_KEY = _CONFIG.get("TWITTER", "access_token")
+TWITTER_ACCESS_TOKEN_SECRET = _CONFIG.get("TWITTER", "access_token_secret")
 
-FACEBOOK_ACCESS_TOKEN = _config.get("FACEBOOK", 'access_token')
+FACEBOOK_ACCESS_TOKEN = _CONFIG.get("FACEBOOK", 'access_token')
 
 # Disable Telnet Console (enabled by default)
 TELNETCONSOLE_ENABLED = False
