@@ -1,0 +1,8 @@
+Crawling functionality for Fanlens.
+
+Based on Scrapy. Can be run in stand alone mode via the `scrapy` command or embedded via the `process` module.
+
+Currently implements crawlers for:
+
+* Facebook public pages (comments and reactions)
+* Twitter search

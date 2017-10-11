@@ -1,23 +1,41 @@
-# coding=utf-8
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""The main crawling module."""
+from datetime import datetime
 from functools import partialmethod
+from typing import Dict, Union
 
 import requests
 
-from config import get_config
+from common.config import get_config
 
-_config = get_config()
-BASE_PATH = '%s/%s/activities' % (_config.get('DEFAULT', 'version'), _config.get('CRAWLER', 'api_host'))
+TSince = Union[str, int, datetime]
+
+_CONFIG = get_config()
+BASE_PATH = '%s/%s/activities' % (_CONFIG.get('DEFAULT', 'version'), _CONFIG.get('CRAWLER', 'api_host'))
 
 
-def api_path(*parts):
+def api_path(*parts: str) -> str:
+    """
+    Build a url path str for the fanlens api
+    :param parts: path elements
+    :return: a url pointing to the fanlens api
+    """
     return BASE_PATH + '/' + '/'.join(map(str, parts))
 
 
-def headers(api_key):
-    return {'Authorization': api_key, 'Content-Type': 'application/json'}
+def headers(jwt_token: str) -> Dict[str, str]:
+    """
+    Required headers to interact with the fanlens api
+    :param jwt_token: jwt_token
+    :return: a dictionary of headers
+    """
+    return {'Authorization': jwt_token, 'Content-Type': 'application/json'}
 
 
-if not _config.getboolean('CRAWLER', 'verifyssl', fallback=False):
-    old_request = requests.Session.request
-    requests.Session.request = partialmethod(old_request, verify=False)
-    requests.packages.urllib3.disable_warnings()
+if not _CONFIG.getboolean('CRAWLER', 'verifyssl', fallback=True):
+    # sys.modules mangling pylint: disable=no-member
+    _OLD_REQUEST = requests.Session.request
+    requests.Session.request = partialmethod(_OLD_REQUEST, verify=False)  # type: ignore
+    requests.packages.urllib3.disable_warnings()  # type: ignore
