@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Helper methods to access Facebook api"""
 from datetime import datetime
 from enum import Enum

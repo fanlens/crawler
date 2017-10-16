@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Twitter API Spider"""
 from datetime import datetime
 from typing import Optional, List, Dict, Any, Union

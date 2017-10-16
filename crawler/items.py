@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """Defined  models for scraped items"""
 # See documentation in:
 # http://doc.scrapy.org/en/latest/topics/items.html
