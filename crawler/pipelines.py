@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Pipelines for crawled items"""
 import requests
 from scrapy import Item

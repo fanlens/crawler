@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Facebook API Spider"""
 from datetime import datetime
 from typing import Optional, Dict, Any, Union, Set

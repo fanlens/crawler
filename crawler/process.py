@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """Tools to embed the scrapy crawler as a subprocess."""
 
 from typing import Type, Any, Union, Optional

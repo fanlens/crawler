@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Settings for the scrapy crawler"""
 from common.config import get_config
 
